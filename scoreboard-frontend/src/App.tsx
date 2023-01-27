@@ -6,6 +6,7 @@ import SetPanel from "./SetPanel";
 import Teamlabel from "./TeamLabel";
 import Theme from "./Theme";
 import Toolbar from "./Toolbar";
+import "./App.css";
 
 function App() {
   const [guestInverted, setGuestInverted] = React.useState(false);
