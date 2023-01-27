@@ -1,37 +1,16 @@
-import { Button, Fab, Paper, Stack, TextField, useTheme } from "@mui/material";
-import {
-  useGuestScore,
-  useGuestSet,
-  useGuestTeam,
-  useHomeScore,
-  useHomeSet,
-  useHomeTeam,
-} from "./Score";
+import { Button, Fab, Paper, Stack, useTheme } from "@mui/material";
+import { useGuestScore, useGuestSet, useHomeScore, useHomeSet } from "./Score";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 import * as React from "react";
 
 function ScoreControls(props: { state: [number, (val: number) => void] }) {
-  const [val, setVal] = props.state;
+  const setVal = props.state[1];
   return (
     <Stack direction="row" spacing={1}>
-      <Button
-        color="inherit"
-        variant="outlined"
-        onClick={() => setVal(Math.max(0, val - 1))}
-      >
-        -
-      </Button>
       <Button color="inherit" variant="outlined" onClick={() => setVal(0)}>
         Reset
-      </Button>
-      <Button
-        color="inherit"
-        variant="outlined"
-        onClick={() => setVal(val + 1)}
-      >
-        +
       </Button>
     </Stack>
   );
@@ -49,12 +28,6 @@ export default function Toolbar(props: {
   const homeScoreState = useHomeScore();
   const homeSetState = useHomeSet();
 
-  const [homeTeam, setHomeTeam] = useHomeTeam();
-  const [guestTeam, setGuestTeam] = useGuestTeam();
-
-  const setLeftTeam = guestInverted ? setGuestTeam : setHomeTeam;
-  const setRightTeam = guestInverted ? setHomeTeam : setGuestTeam;
-
   const theme = useTheme();
 
   const bar = (
@@ -68,7 +41,9 @@ export default function Toolbar(props: {
       }}
     >
       <Stack
-        padding={1}
+        padding={2}
+        paddingLeft={6}
+        paddingRight={6}
         direction="row"
         alignItems="center"
         justifyContent="space-between"
@@ -77,12 +52,7 @@ export default function Toolbar(props: {
         <ScoreControls
           state={guestInverted ? guestScoreState : homeScoreState}
         />
-        <TextField
-          label={guestInverted ? "Guest" : "Home"}
-          variant="outlined"
-          defaultValue={guestInverted ? guestTeam : homeTeam}
-          onChange={(e) => setLeftTeam(e.target.value)}
-        />
+
         <Button
           color="inherit"
           variant="outlined"
@@ -90,12 +60,7 @@ export default function Toolbar(props: {
         >
           Switch
         </Button>
-        <TextField
-          label={guestInverted ? "Home" : "Guest"}
-          variant="outlined"
-          defaultValue={guestInverted ? homeTeam : guestTeam}
-          onChange={(e) => setRightTeam(e.target.value)}
-        />
+
         <ScoreControls
           state={guestInverted ? homeScoreState : guestScoreState}
         />

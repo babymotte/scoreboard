@@ -1,8 +1,11 @@
 import { Box, Typography, useTheme } from "@mui/material";
-import React from "react";
+import React, { CSSProperties } from "react";
 import { useGuestSet, useHomeSet } from "./Score";
 
-export default function SetPanel(props: { guest: boolean }) {
+export default function SetPanel(props: {
+  guest: boolean;
+  sx?: CSSProperties;
+}) {
   const theme = useTheme();
 
   const homeScore = useHomeSet();
@@ -13,6 +16,7 @@ export default function SetPanel(props: { guest: boolean }) {
   return (
     <Box
       sx={{
+        ...props.sx,
         cursor: "pointer",
         userSelect: "none",
         color: theme.palette.text.primary,
