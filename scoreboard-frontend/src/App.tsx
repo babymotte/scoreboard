@@ -1,37 +1,30 @@
-import { Divider, Grid } from "@mui/material";
+import { Divider, Stack } from "@mui/material";
 import React from "react";
+import Score from "./Score";
 import ScorePanel from "./ScorePanel";
-import SetPanel from "./SetPanel";
+import Statusbar from "./Statusbar";
 import Theme from "./Theme";
+import Toolbar from "./Toolbar";
 
 function App() {
   const [guestInverted, setGuestInverted] = React.useState(false);
 
   return (
     <Theme>
-      <Grid
-        sx={{ width: "100vw", height: "100vh" }}
-        container
-        direction="row"
-        columns={{ xs: 25 }}
-        alignItems="stretch"
-        overflow="clip"
-      >
-        <ScorePanel guest={guestInverted} />
-        <Grid
-          item
-          xs={1}
-          container
+      <Score>
+        <Statusbar guestInverted={guestInverted} />
+        <Stack
+          sx={{ width: "100vw", height: "100vh" }}
           direction="row"
-          justifyContent="center"
-          alignItems="center"
+          alignItems="stretch"
+          overflow="clip"
         >
+          <ScorePanel guest={guestInverted} />
           <Divider orientation="vertical" />
-        </Grid>
-        <ScorePanel guest={!guestInverted} />
-      </Grid>
-      <SetPanel guest={guestInverted} />
-      <SetPanel guest={!guestInverted} />
+          <ScorePanel guest={!guestInverted} />
+        </Stack>
+        <Toolbar homeGuest={[guestInverted, setGuestInverted]} />
+      </Score>
     </Theme>
   );
 }

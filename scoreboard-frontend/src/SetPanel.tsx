@@ -1,12 +1,14 @@
 import { Box, Typography, useTheme } from "@mui/material";
 import React from "react";
+import { useGuestSet, useHomeSet } from "./Score";
 
 export default function SetPanel(props: { guest: boolean }) {
   const theme = useTheme();
 
-  const pos = props.guest ? { right: "3vw" } : { left: "3vw" };
+  const homeScore = useHomeSet();
+  const guestScore = useGuestSet();
 
-  const [set, setSet] = React.useState(0);
+  const [set, setSet] = props.guest ? guestScore : homeScore;
 
   return (
     <Box
@@ -14,9 +16,6 @@ export default function SetPanel(props: { guest: boolean }) {
         cursor: "pointer",
         userSelect: "none",
         color: theme.palette.text.primary,
-        position: "absolute",
-        top: "-1vh",
-        ...pos,
       }}
       onClick={() => setSet(set + 1)}
     >
