@@ -1,6 +1,7 @@
 import { Box, Typography, useTheme } from "@mui/material";
 import React, { CSSProperties } from "react";
 import { useGuestSet, useHomeSet } from "./Score";
+import useSwipe from "./touchHandlers";
 
 export default function SetPanel(props: {
   guest: boolean;
@@ -22,6 +23,10 @@ export default function SetPanel(props: {
         color: theme.palette.text.primary,
       }}
       onClick={() => setSet(set + 1)}
+      {...useSwipe(
+        () => setSet(set + 1),
+        () => setSet(set - 1)
+      )}
     >
       <Typography fontSize="20vh" align="center">
         {set}

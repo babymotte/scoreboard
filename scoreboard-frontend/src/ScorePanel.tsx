@@ -1,6 +1,7 @@
 import { Typography, useTheme } from "@mui/material";
 import React from "react";
 import { useGuestScore, useHomeScore } from "./Score";
+import useSwipe from "./touchHandlers";
 
 export default function ScorePanel(props: { guest: boolean }) {
   const homeScore = useHomeScore();
@@ -22,6 +23,10 @@ export default function ScorePanel(props: { guest: boolean }) {
       onClick={() => setScore(score + 1)}
       fontSize="55vh"
       align="center"
+      {...useSwipe(
+        () => setScore(score + 1),
+        () => setScore(score - 1)
+      )}
     >
       {score}
     </Typography>
