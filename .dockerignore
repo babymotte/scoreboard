@@ -1,0 +1,5 @@
+.dockerignore
+scoreboard-frontend/node_modules/*
+/chart/*
+.github/*
+.git/*
