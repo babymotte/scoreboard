@@ -25,7 +25,7 @@ export default function ScorePanel(props: { guest: boolean }) {
       align="center"
       {...useSwipe(
         () => setScore(score + 1),
-        () => setScore(Math.max(score - 1))
+        () => setScore(Math.max(0, score - 1))
       )}
     >
       {score}

@@ -25,7 +25,7 @@ export default function SetPanel(props: {
       onClick={() => setSet(set + 1)}
       {...useSwipe(
         () => setSet(set + 1),
-        () => setSet(Math.max(set - 1))
+        () => setSet(Math.max(0, set - 1))
       )}
     >
       <Typography fontSize="20vh" align="center">
