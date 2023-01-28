@@ -1,14 +1,17 @@
 import { TextField, Typography } from "@mui/material";
 import React from "react";
-import { useGuestTeam, useHomeTeam } from "./Score";
+import { useGuestTeam, useHomeTeam, useSwitched } from "./State";
 
 export default function Teamlabel(props: { guest: boolean }) {
   const [homeTeam, setHomeTeam] = useHomeTeam();
   const [guestTeam, setGuestTeam] = useGuestTeam();
 
-  const rawTeam = props.guest ? guestTeam : homeTeam;
-  const team = props.guest ? guestTeam || "Guest" : homeTeam || "Home";
-  const setTeam = props.guest ? setGuestTeam : setHomeTeam;
+  const [guestInverted] = useSwitched();
+  const guest = props.guest !== guestInverted;
+
+  const rawTeam = guest ? guestTeam : homeTeam;
+  const team = guest ? guestTeam || "Guest" : homeTeam || "Home";
+  const setTeam = guest ? setGuestTeam : setHomeTeam;
 
   const [editing, setEditing] = React.useState(false);
 

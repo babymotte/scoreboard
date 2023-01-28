@@ -1,86 +1,89 @@
 import { Grid } from "@mui/material";
-import React from "react";
-import Score from "./Score";
+import { Worterbuch } from "worterbuch-react";
+import State from "./State";
 import ScorePanel from "./ScorePanel";
 import SetPanel from "./SetPanel";
 import Teamlabel from "./TeamLabel";
 import Theme from "./Theme";
 import Toolbar from "./Toolbar";
 import "./App.css";
+import { config } from "./config";
 
 function App() {
-  const [guestInverted, setGuestInverted] = React.useState(false);
+  const cfg = config();
 
   return (
     <Theme>
-      <Score>
-        <Grid
-          container
-          sx={{ width: "100vw", height: "100vh", overflow: "clip" }}
-          direction="row"
-        >
+      <Worterbuch config={cfg} json>
+        <State>
           <Grid
-            item
-            xs={2}
             container
-            alignItems="center"
-            justifyContent="center"
+            sx={{ width: "100vw", height: "100vh", overflow: "clip" }}
+            direction="row"
           >
-            <SetPanel guest={guestInverted} />
+            <Grid
+              item
+              xs={2}
+              container
+              alignItems="center"
+              justifyContent="center"
+            >
+              <SetPanel guest={false} />
+            </Grid>
+
+            <Grid
+              item
+              xs={4}
+              container
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Teamlabel guest={false} />
+            </Grid>
+            <Grid
+              item
+              xs={4}
+              container
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Teamlabel guest={true} />
+            </Grid>
+
+            <Grid
+              item
+              xs={2}
+              container
+              alignItems="center"
+              justifyContent="center"
+            >
+              <SetPanel guest={true} />
+            </Grid>
+
+            <Grid
+              item
+              xs={6}
+              container
+              alignItems="center"
+              justifyContent="center"
+            >
+              <ScorePanel guest={false} />
+            </Grid>
+
+            <Grid
+              item
+              xs={6}
+              container
+              alignItems="center"
+              justifyContent="center"
+            >
+              <ScorePanel guest={true} />
+            </Grid>
           </Grid>
 
-          <Grid
-            item
-            xs={4}
-            container
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Teamlabel guest={guestInverted} />
-          </Grid>
-          <Grid
-            item
-            xs={4}
-            container
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Teamlabel guest={!guestInverted} />
-          </Grid>
-
-          <Grid
-            item
-            xs={2}
-            container
-            alignItems="center"
-            justifyContent="center"
-          >
-            <SetPanel guest={!guestInverted} />
-          </Grid>
-
-          <Grid
-            item
-            xs={6}
-            container
-            alignItems="center"
-            justifyContent="center"
-          >
-            <ScorePanel guest={guestInverted} />
-          </Grid>
-
-          <Grid
-            item
-            xs={6}
-            container
-            alignItems="center"
-            justifyContent="center"
-          >
-            <ScorePanel guest={!guestInverted} />
-          </Grid>
-        </Grid>
-
-        <Toolbar homeGuest={[guestInverted, setGuestInverted]} />
-      </Score>
+          <Toolbar />
+        </State>
+      </Worterbuch>
     </Theme>
   );
 }

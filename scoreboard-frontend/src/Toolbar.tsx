@@ -1,25 +1,35 @@
 import { Button, Fab, Paper, Stack, useTheme } from "@mui/material";
-import { useGuestScore, useGuestSet, useHomeScore, useHomeSet } from "./Score";
+import {
+  useConnected,
+  useGuestScore,
+  useGuestSet,
+  useHomeScore,
+  useHomeSet,
+  useSwitched,
+} from "./State";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 import * as React from "react";
 
 function ScoreControls(props: { state: [number, (val: number) => void] }) {
+  const connected = useConnected();
   const setVal = props.state[1];
   return (
     <Stack direction="row" spacing={1}>
-      <Button color="inherit" variant="outlined" onClick={() => setVal(0)}>
+      <Button
+        color={connected ? "success" : "error"}
+        variant="outlined"
+        onClick={() => setVal(0)}
+      >
         Reset
       </Button>
     </Stack>
   );
 }
 
-export default function Toolbar(props: {
-  homeGuest: [boolean, (inverted: boolean) => void];
-}) {
-  const [guestInverted, setGuestInverted] = props.homeGuest;
+export default function Toolbar(props: {}) {
+  const [guestInverted, setGuestInverted] = useSwitched();
 
   const [drawerOpen, setDrawerOpen] = React.useState(false);
 
@@ -29,6 +39,8 @@ export default function Toolbar(props: {
   const homeSetState = useHomeSet();
 
   const theme = useTheme();
+
+  const connected = useConnected();
 
   const bar = (
     <Paper
@@ -54,7 +66,7 @@ export default function Toolbar(props: {
         />
 
         <Button
-          color="inherit"
+          color={connected ? "success" : "error"}
           variant="outlined"
           onClick={() => setGuestInverted(!guestInverted)}
         >
@@ -78,7 +90,7 @@ export default function Toolbar(props: {
           position: "absolute",
           right: theme.spacing(2),
           bottom: theme.spacing(drawerOpen ? 10 : 2),
-          opacity: 0.2,
+          opacity: 0.15,
         }}
       >
         {drawerOpen ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
