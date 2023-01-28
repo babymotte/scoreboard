@@ -1,5 +1,6 @@
 import React, { ReactElement } from "react";
 import { useSet, useSubscribe, useWorterbuchConnected } from "worterbuch-react";
+import { DEFAULT_THEME, ThemeType } from "./Theme";
 
 type ApplicationState = {
   home: {
@@ -13,6 +14,7 @@ type ApplicationState = {
     team: [string, (val: string) => void];
   };
   switched: [boolean, (val: boolean) => void];
+  themeType: [ThemeType, (val: ThemeType) => void];
   connected: boolean;
 };
 
@@ -30,6 +32,7 @@ const emptyScore: ApplicationState = {
     team: ["", (val: string) => {}],
   },
   switched: [false, () => {}],
+  themeType: [DEFAULT_THEME, () => {}],
   connected: false,
 };
 
@@ -42,6 +45,7 @@ const SCORE = "score";
 const SET = "set";
 const TEAM = "team";
 const SWITCHED = "switched";
+const THEME = "theme";
 
 export default function State(props: {
   children: ReactElement | ReactElement[];
@@ -51,15 +55,16 @@ export default function State(props: {
 
   const persistedJson = window.localStorage?.getItem(storeKey);
 
-  let initial: [number, number, string, number, number, string, boolean] = [
-    0,
-    0,
-    "",
-    0,
-    0,
-    "",
-    false,
-  ];
+  let initial: [
+    number,
+    number,
+    string,
+    number,
+    number,
+    string,
+    boolean,
+    ThemeType
+  ] = [0, 0, "", 0, 0, "", false, DEFAULT_THEME];
   if (persistedJson) {
     try {
       initial = JSON.parse(persistedJson);
@@ -73,6 +78,9 @@ export default function State(props: {
   const [localGuestSet, setLocalGuestSet] = React.useState(initial[4] || 0);
   const [localGuestTeam, setLocalGuestTeam] = React.useState(initial[5] || "");
   const [localSwitched, setLocalSwitched] = React.useState(initial[6] || false);
+  const [localTheme, setLocalTheme] = React.useState(
+    initial[7] || DEFAULT_THEME
+  );
 
   const remoteHomeScore = useSubscribe<number>(SCOREBOARD, HOME, SCORE);
   const remoteHomeSet = useSubscribe<number>(SCOREBOARD, HOME, SET);
@@ -81,6 +89,7 @@ export default function State(props: {
   const remoteGuestSet = useSubscribe<number>(SCOREBOARD, GUEST, SET);
   const remoteGuestTeam = useSubscribe<string>(SCOREBOARD, GUEST, TEAM);
   const remoteSwitched = useSubscribe<boolean>(SCOREBOARD, SWITCHED);
+  const remoteTheme = useSubscribe<ThemeType>(SCOREBOARD, THEME);
 
   const setRemoteHomeScore = (val: number) =>
     set([SCOREBOARD, HOME, SCORE], val);
@@ -92,6 +101,7 @@ export default function State(props: {
   const setRemoteGuestTeam = (val: string) =>
     set([SCOREBOARD, GUEST, TEAM], val);
   const setRemoteSwitched = (val: boolean) => set([SCOREBOARD, SWITCHED], val);
+  const setRemoteTheme = (val: ThemeType) => set([SCOREBOARD, THEME], val);
 
   const setHomeScore = connected ? setRemoteHomeScore : setLocalHomeScore;
   const setHomeSet = connected ? setRemoteHomeSet : setLocalHomeSet;
@@ -100,6 +110,7 @@ export default function State(props: {
   const setGuestSet = connected ? setRemoteGuestSet : setLocalGuestSet;
   const setGuestTeam = connected ? setRemoteGuestTeam : setLocalGuestTeam;
   const setSwitched = connected ? setRemoteSwitched : setLocalSwitched;
+  const setTheme = connected ? setRemoteTheme : setLocalTheme;
 
   const homeScore =
     connected && remoteHomeScore !== undefined
@@ -121,6 +132,9 @@ export default function State(props: {
       ? remoteGuestTeam
       : localGuestTeam;
 
+  const theme =
+    connected && remoteTheme !== undefined ? remoteTheme : localTheme;
+
   const switched =
     connected && remoteSwitched !== undefined ? remoteSwitched : localSwitched;
 
@@ -136,6 +150,7 @@ export default function State(props: {
       team: [guestTeam, setGuestTeam],
     },
     switched: [switched, setSwitched],
+    themeType: [theme, setTheme],
     connected,
   };
 
@@ -147,6 +162,7 @@ export default function State(props: {
     state.guest.set[0],
     state.guest.team[0],
     state.switched[0],
+    state.themeType[0],
   ]);
 
   window.localStorage?.setItem(storeKey, store);
@@ -192,4 +208,9 @@ export function useSwitched() {
 export function useConnected() {
   const state = React.useContext(StateCtx);
   return state.connected;
+}
+
+export function useThemeType() {
+  const state = React.useContext(StateCtx);
+  return state.themeType;
 }
