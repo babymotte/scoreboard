@@ -53,6 +53,7 @@ export default function Toolbar(props: {}) {
     setGuestScore(0);
     setHomeSet(0);
     setGuestSet(0);
+    setGuestInverted(false);
   };
 
   const setForHome = () => {
