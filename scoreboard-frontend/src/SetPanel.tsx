@@ -24,6 +24,7 @@ export default function SetPanel(props: {
         cursor: "pointer",
         userSelect: "none",
         color: theme.palette.text.primary,
+        touchAction: "none",
       }}
       onClick={() => setSet(set + 1)}
       {...useSwipe(

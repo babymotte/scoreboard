@@ -160,7 +160,7 @@ export default function Toolbar(props: {}) {
     <Stack
       spacing={1}
       sx={{
-        position: "absolute",
+        position: "fixed",
         left: 0,
         rigth: 0,
         bottom: 0,

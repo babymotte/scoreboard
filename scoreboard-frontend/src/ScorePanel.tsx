@@ -20,6 +20,7 @@ export default function ScorePanel(props: { guest: boolean }) {
         cursor: "pointer",
         userSelect: "none",
         color: guest ? theme.palette.error.main : theme.palette.success.main,
+        touchAction: "none",
       }}
       onClick={() => setScore(score + 1)}
       fontSize="50vh"
