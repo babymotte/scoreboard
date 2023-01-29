@@ -22,9 +22,9 @@ export default function ScorePanel(props: { guest: boolean }) {
         color: guest ? theme.palette.error.main : theme.palette.success.main,
       }}
       onClick={() => setScore(score + 1)}
-      fontSize="55vh"
+      fontSize="50vh"
       align="center"
-      marginTop={-8}
+      marginTop={-10}
       {...useSwipe(
         () => setScore(score + 1),
         () => setScore(Math.max(0, score - 1))

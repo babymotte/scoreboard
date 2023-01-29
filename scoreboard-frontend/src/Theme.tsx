@@ -4,8 +4,19 @@ import { createTheme } from "@mui/material/styles";
 import { ReactNode } from "react";
 import { useThemeType } from "./State";
 
+type Themes = {
+  RedGreen: ThemeType;
+  BlueYellow: ThemeType;
+};
+
 export type ThemeType = "Red/Green" | "Blue/Yellow";
-export const DEFAULT_THEME: ThemeType = "Red/Green";
+
+export const THEMES: Themes = {
+  RedGreen: "Red/Green",
+  BlueYellow: "Blue/Yellow",
+};
+
+export const DEFAULT_THEME: ThemeType = THEMES.RedGreen;
 
 const RedGreen = createTheme({
   palette: {

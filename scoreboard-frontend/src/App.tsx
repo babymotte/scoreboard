@@ -13,9 +13,9 @@ function App() {
   const cfg = config();
 
   return (
-    <Theme>
-      <Worterbuch config={cfg} json>
-        <State>
+    <Worterbuch config={cfg} json>
+      <State>
+        <Theme>
           <Grid
             container
             sx={{ width: "100vw", height: "100vh", overflow: "clip" }}
@@ -82,9 +82,9 @@ function App() {
           </Grid>
 
           <Toolbar />
-        </State>
-      </Worterbuch>
-    </Theme>
+        </Theme>
+      </State>
+    </Worterbuch>
   );
 }
 
