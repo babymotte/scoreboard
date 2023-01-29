@@ -13,7 +13,7 @@ function App() {
   const cfg = config();
 
   return (
-    <Worterbuch config={cfg} json>
+    <Worterbuch config={cfg} json automaticReconnect>
       <State>
         <Theme>
           <Grid

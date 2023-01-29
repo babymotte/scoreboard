@@ -16,6 +16,7 @@ type ApplicationState = {
   switched: [boolean, (val: boolean) => void];
   themeType: [ThemeType, (val: ThemeType) => void];
   connected: boolean;
+  master: [boolean, (val: boolean) => void];
 };
 
 const storeKey = "net.bbmsoft.scoreboard";
@@ -34,6 +35,7 @@ const emptyScore: ApplicationState = {
   switched: [false, () => {}],
   themeType: [DEFAULT_THEME, () => {}],
   connected: false,
+  master: [false, () => {}],
 };
 
 const StateCtx = React.createContext<ApplicationState>(emptyScore);
@@ -52,6 +54,10 @@ export default function State(props: {
 }) {
   const set = useSet();
   const [connected] = useWorterbuchConnected();
+  const [wasConnectedBefore, setWasConnectedBefore] = React.useState(false);
+  const [wasRecentlyConnected, setWasRecentlyConnected] = React.useState(false);
+  const [needsSync, setNeedsSync] = React.useState(false);
+  const [isSynced, setIsSynced] = React.useState(false);
 
   const persistedJson = window.localStorage?.getItem(storeKey);
 
@@ -63,8 +69,9 @@ export default function State(props: {
     number,
     string,
     boolean,
-    ThemeType
-  ] = [0, 0, "", 0, 0, "", false, DEFAULT_THEME];
+    ThemeType,
+    boolean
+  ] = [0, 0, "", 0, 0, "", false, DEFAULT_THEME, false];
   if (persistedJson) {
     try {
       initial = JSON.parse(persistedJson);
@@ -81,6 +88,7 @@ export default function State(props: {
   const [localTheme, setLocalTheme] = React.useState(
     initial[7] || DEFAULT_THEME
   );
+  const [isMaster, setIsMaster] = React.useState(initial[8] || false);
 
   const remoteHomeScore = useSubscribe<number>(SCOREBOARD, HOME, SCORE);
   const remoteHomeSet = useSubscribe<number>(SCOREBOARD, HOME, SET);
@@ -90,6 +98,71 @@ export default function State(props: {
   const remoteGuestTeam = useSubscribe<string>(SCOREBOARD, GUEST, TEAM);
   const remoteSwitched = useSubscribe<boolean>(SCOREBOARD, SWITCHED);
   const remoteTheme = useSubscribe<ThemeType>(SCOREBOARD, THEME);
+
+  console.log("isSynced", isSynced, "connected", connected);
+
+  React.useEffect(() => {
+    if (connected && isSynced) {
+      console.log("Syncing to local");
+
+      // Sync remote state to local
+      if (remoteHomeScore !== undefined && remoteHomeScore !== localHomeScore)
+        setLocalHomeScore(remoteHomeScore);
+      if (remoteHomeSet !== undefined && remoteHomeSet !== localHomeSet)
+        setLocalHomeSet(remoteHomeSet);
+      if (remoteHomeTeam !== undefined && remoteHomeTeam !== localHomeTeam)
+        setLocalHomeTeam(remoteHomeTeam);
+      if (
+        remoteGuestScore !== undefined &&
+        remoteGuestScore !== localGuestScore
+      )
+        setLocalGuestScore(remoteGuestScore);
+      if (remoteGuestSet !== undefined && remoteGuestSet !== localGuestSet)
+        setLocalGuestSet(remoteGuestSet);
+      if (remoteGuestTeam !== undefined && remoteGuestTeam !== localGuestTeam)
+        setLocalGuestTeam(remoteGuestTeam);
+      if (remoteSwitched !== undefined && remoteSwitched !== localSwitched)
+        setLocalSwitched(remoteSwitched);
+      if (remoteTheme !== undefined && remoteTheme !== localTheme)
+        setLocalTheme(remoteTheme);
+    }
+  }, [
+    connected,
+    isSynced,
+    localGuestScore,
+    localGuestSet,
+    localGuestTeam,
+    localHomeScore,
+    localHomeSet,
+    localHomeTeam,
+    localSwitched,
+    localTheme,
+    remoteGuestScore,
+    remoteGuestSet,
+    remoteGuestTeam,
+    remoteHomeScore,
+    remoteHomeSet,
+    remoteHomeTeam,
+    remoteSwitched,
+    remoteTheme,
+  ]);
+
+  React.useEffect(() => {
+    if (connected) {
+      if (!wasConnectedBefore) {
+        setWasConnectedBefore(true);
+        setIsSynced(true);
+      } else if (!wasRecentlyConnected) {
+        setNeedsSync(true);
+      }
+    } else {
+      setIsSynced(false);
+    }
+
+    if (connected !== wasRecentlyConnected) {
+      setWasRecentlyConnected(connected);
+    }
+  }, [connected, isMaster, wasConnectedBefore, wasRecentlyConnected]);
 
   const setRemoteHomeScore = (val: number) =>
     set([SCOREBOARD, HOME, SCORE], val);
@@ -102,6 +175,22 @@ export default function State(props: {
     set([SCOREBOARD, GUEST, TEAM], val);
   const setRemoteSwitched = (val: boolean) => set([SCOREBOARD, SWITCHED], val);
   const setRemoteTheme = (val: ThemeType) => set([SCOREBOARD, THEME], val);
+
+  if (needsSync) {
+    setNeedsSync(false);
+    if (isMaster) {
+      console.log("pushing to remote");
+      setRemoteHomeScore(localHomeScore);
+      setRemoteHomeSet(localHomeSet);
+      setRemoteHomeTeam(localHomeTeam);
+      setRemoteGuestScore(localGuestScore);
+      setRemoteGuestSet(localGuestSet);
+      setRemoteGuestTeam(localGuestTeam);
+      setRemoteSwitched(localSwitched);
+      setRemoteTheme(localTheme);
+    }
+    setIsSynced(true);
+  }
 
   const setHomeScore = connected ? setRemoteHomeScore : setLocalHomeScore;
   const setHomeSet = connected ? setRemoteHomeSet : setLocalHomeSet;
@@ -152,6 +241,7 @@ export default function State(props: {
     switched: [switched, setSwitched],
     themeType: [theme, setTheme],
     connected,
+    master: [isMaster, setIsMaster],
   };
 
   const store = JSON.stringify([
@@ -163,6 +253,7 @@ export default function State(props: {
     state.guest.team[0],
     state.switched[0],
     state.themeType[0],
+    state.master[0],
   ]);
 
   window.localStorage?.setItem(storeKey, store);
@@ -213,4 +304,9 @@ export function useConnected() {
 export function useThemeType() {
   const state = React.useContext(StateCtx);
   return state.themeType;
+}
+
+export function useMaster() {
+  const state = React.useContext(StateCtx);
+  return state.master;
 }

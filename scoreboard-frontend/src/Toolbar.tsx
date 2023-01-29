@@ -3,11 +3,13 @@ import {
   Button,
   Fab,
   FormControl,
+  FormControlLabel,
   InputLabel,
   MenuItem,
   Paper,
   Select,
   Stack,
+  Switch,
   useTheme,
 } from "@mui/material";
 import {
@@ -18,6 +20,7 @@ import {
   useHomeScore,
   useHomeSet,
   useHomeTeam,
+  useMaster,
   useSwitched,
   useThemeType,
 } from "./State";
@@ -84,6 +87,8 @@ export default function Toolbar(props: {}) {
 
   const switchTeams = () => setGuestInverted(!guestInverted);
 
+  const [master, setMaster] = useMaster();
+
   const controlBar = (
     <Paper>
       <Stack
@@ -140,6 +145,16 @@ export default function Toolbar(props: {}) {
             <CancelIcon color="error" />
           )}
         </Button>
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={master}
+              onChange={(e) => setMaster(e.target.checked)}
+            />
+          }
+          label="Master"
+        />
 
         <FormControl>
           <InputLabel id="theme-select-label">Theme</InputLabel>
