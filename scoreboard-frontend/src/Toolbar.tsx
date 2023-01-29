@@ -59,18 +59,22 @@ export default function Toolbar(props: {}) {
     setGuestInverted(false);
   };
 
+  const nextSet = () => {
+    setTimeout(() => {
+      setHomeScore(0);
+      setGuestScore(0);
+    }, 1000);
+    setTimeout(switchTeams, 2000);
+  };
+
   const setForHome = () => {
     setHomeSet(homeSet + 1);
-    setHomeScore(0);
-    setGuestScore(0);
-    setTimeout(switchTeams, 1000);
+    nextSet();
   };
 
   const setForGuest = () => {
     setGuestSet(guestSet + 1);
-    setHomeScore(0);
-    setGuestScore(0);
-    setTimeout(switchTeams, 1000);
+    nextSet();
   };
 
   const setForHomeButton = (
