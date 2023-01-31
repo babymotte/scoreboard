@@ -51,9 +51,13 @@ export default function Toolbar(props: {}) {
 
   const [themeType, setThemeType] = useThemeType();
 
-  const resetAll = () => {
+  const resetScore = () => {
     setHomeScore(0);
     setGuestScore(0);
+  };
+
+  const resetAll = () => {
+    resetScore();
     setHomeSet(0);
     setGuestSet(0);
     setGuestInverted(false);
@@ -105,7 +109,7 @@ export default function Toolbar(props: {}) {
       >
         <Stack
           direction="row"
-          sx={{ width: "33%" }}
+          sx={{ width: "25%" }}
           justifyContent="flex-start"
         >
           {guestInverted ? setForGuestButton : setForHomeButton}
@@ -113,9 +117,12 @@ export default function Toolbar(props: {}) {
         <Stack
           direction="row"
           spacing={2}
-          sx={{ width: "33%" }}
+          sx={{ width: "50%" }}
           justifyContent="center"
         >
+          <Button variant="outlined" onClick={resetScore} color="inherit">
+            Reset Score
+          </Button>
           <Button variant="outlined" onClick={resetAll} color="inherit">
             Reset All
           </Button>
@@ -123,7 +130,7 @@ export default function Toolbar(props: {}) {
             Switch
           </Button>
         </Stack>
-        <Stack direction="row" sx={{ width: "33%" }} justifyContent="flex-end">
+        <Stack direction="row" sx={{ width: "25%" }} justifyContent="flex-end">
           {guestInverted ? setForHomeButton : setForGuestButton}
         </Stack>
       </Stack>
