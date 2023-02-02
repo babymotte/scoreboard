@@ -1,6 +1,6 @@
 window.globalConfig = {
   backendScheme: "ws",
-  backendHost: "worterbuch.homelab",
+  backendHost: "scoreboard.local",
   backendPort: 80,
   backendPath: "/ws",
 };
