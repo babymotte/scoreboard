@@ -1,13 +1,14 @@
 import { TextField, Typography } from "@mui/material";
 import React from "react";
-import { useGuestTeam, useHomeTeam, useSwitched } from "./State";
+import { useFlipped, useGuestTeam, useHomeTeam, useSwitched } from "./State";
 
 export default function Teamlabel(props: { guest: boolean }) {
   const [homeTeam, setHomeTeam] = useHomeTeam();
   const [guestTeam, setGuestTeam] = useGuestTeam();
 
   const [guestInverted] = useSwitched();
-  const guest = props.guest !== guestInverted;
+  const [guestFlipped] = useFlipped();
+  const guest = (props.guest !== guestInverted) !== guestFlipped;
 
   const rawTeam = guest ? guestTeam : homeTeam;
   const team = guest ? guestTeam || "Guest" : homeTeam || "Home";

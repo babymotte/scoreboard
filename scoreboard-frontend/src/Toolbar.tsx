@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import {
   useConnected,
+  useFlipped,
   useGuestScore,
   useGuestSet,
   useGuestTeam,
@@ -64,11 +65,9 @@ export default function Toolbar(props: {}) {
   };
 
   const nextSet = () => {
-    setTimeout(() => {
-      setHomeScore(0);
-      setGuestScore(0);
-    }, 1000);
-    setTimeout(switchTeams, 2000);
+    setHomeScore(0);
+    setGuestScore(0);
+    setTimeout(switchTeams, 1000);
   };
 
   const setForHome = () => {
@@ -96,6 +95,7 @@ export default function Toolbar(props: {}) {
   const switchTeams = () => setGuestInverted(!guestInverted);
 
   const [master, setMaster] = useMaster();
+  const [flipped, setFlipped] = useFlipped();
 
   const controlBar = (
     <Paper>
@@ -112,7 +112,7 @@ export default function Toolbar(props: {}) {
           sx={{ width: "25%" }}
           justifyContent="flex-start"
         >
-          {guestInverted ? setForGuestButton : setForHomeButton}
+          {guestInverted === flipped ? setForHomeButton : setForGuestButton}
         </Stack>
         <Stack
           direction="row"
@@ -131,7 +131,7 @@ export default function Toolbar(props: {}) {
           </Button>
         </Stack>
         <Stack direction="row" sx={{ width: "25%" }} justifyContent="flex-end">
-          {guestInverted ? setForHomeButton : setForGuestButton}
+          {guestInverted === flipped ? setForGuestButton : setForHomeButton}
         </Stack>
       </Stack>
     </Paper>
@@ -165,6 +165,15 @@ export default function Toolbar(props: {}) {
             />
           }
           label="Master"
+        />
+        <FormControlLabel
+          control={
+            <Switch
+              checked={flipped}
+              onChange={(e) => setFlipped(e.target.checked)}
+            />
+          }
+          label="Flip"
         />
 
         <FormControl>

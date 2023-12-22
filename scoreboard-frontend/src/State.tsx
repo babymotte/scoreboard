@@ -1,5 +1,9 @@
 import React, { ReactElement } from "react";
-import { useSet, useSubscribe, useWorterbuchConnected } from "worterbuch-react";
+import {
+  useSetLater,
+  useSubscribe,
+  useWorterbuchConnected,
+} from "worterbuch-react";
 import { DEFAULT_THEME, ThemeType } from "./Theme";
 
 type ApplicationState = {
@@ -17,6 +21,7 @@ type ApplicationState = {
   themeType: [ThemeType, (val: ThemeType) => void];
   connected: boolean;
   master: [boolean, (val: boolean) => void];
+  flipped: [boolean, (val: boolean) => void];
 };
 
 const storeKey = "net.bbmsoft.scoreboard";
@@ -36,6 +41,7 @@ const emptyScore: ApplicationState = {
   themeType: [DEFAULT_THEME, () => {}],
   connected: false,
   master: [false, () => {}],
+  flipped: [false, () => {}],
 };
 
 const StateCtx = React.createContext<ApplicationState>(emptyScore);
@@ -52,7 +58,7 @@ const THEME = "theme";
 export default function State(props: {
   children: ReactElement | ReactElement[];
 }) {
-  const set = useSet();
+  const set = useSetLater();
   const [connected] = useWorterbuchConnected();
   const [wasConnectedBefore, setWasConnectedBefore] = React.useState(false);
   const [wasRecentlyConnected, setWasRecentlyConnected] = React.useState(false);
@@ -70,8 +76,9 @@ export default function State(props: {
     string,
     boolean,
     ThemeType,
+    boolean,
     boolean
-  ] = [0, 0, "", 0, 0, "", false, DEFAULT_THEME, false];
+  ] = [0, 0, "", 0, 0, "", false, DEFAULT_THEME, false, false];
   if (persistedJson) {
     try {
       initial = JSON.parse(persistedJson);
@@ -89,15 +96,24 @@ export default function State(props: {
     initial[7] || DEFAULT_THEME
   );
   const [isMaster, setIsMaster] = React.useState(initial[8] || false);
+  const [isFlipped, setFlipped] = React.useState(initial[9] || false);
 
-  const remoteHomeScore = useSubscribe<number>(SCOREBOARD, HOME, SCORE);
-  const remoteHomeSet = useSubscribe<number>(SCOREBOARD, HOME, SET);
-  const remoteHomeTeam = useSubscribe<string>(SCOREBOARD, HOME, TEAM);
-  const remoteGuestScore = useSubscribe<number>(SCOREBOARD, GUEST, SCORE);
-  const remoteGuestSet = useSubscribe<number>(SCOREBOARD, GUEST, SET);
-  const remoteGuestTeam = useSubscribe<string>(SCOREBOARD, GUEST, TEAM);
-  const remoteSwitched = useSubscribe<boolean>(SCOREBOARD, SWITCHED);
-  const remoteTheme = useSubscribe<ThemeType>(SCOREBOARD, THEME);
+  const remoteHomeScore =
+    useSubscribe<number>(`${SCOREBOARD}/${HOME}/${SCORE}`) || 0;
+  const remoteHomeSet =
+    useSubscribe<number>(`${SCOREBOARD}/${HOME}/${SET}`) || 0;
+  const remoteHomeTeam =
+    useSubscribe<string>(`${SCOREBOARD}/${HOME}/${TEAM}`) || "Home";
+  const remoteGuestScore =
+    useSubscribe<number>(`${SCOREBOARD}/${GUEST}/${SCORE}`) || 0;
+  const remoteGuestSet =
+    useSubscribe<number>(`${SCOREBOARD}/${GUEST}/${SET}`) || 0;
+  const remoteGuestTeam =
+    useSubscribe<string>(`${SCOREBOARD}/${GUEST}/${TEAM}`) || "Guest";
+  const remoteSwitched =
+    useSubscribe<boolean>(`${SCOREBOARD}/${SWITCHED}`) || false;
+  const remoteTheme =
+    useSubscribe<ThemeType>(`${SCOREBOARD}/${THEME}`) || "Red/Green";
 
   console.log("isSynced", isSynced, "connected", connected);
 
@@ -165,16 +181,20 @@ export default function State(props: {
   }, [connected, isMaster, wasConnectedBefore, wasRecentlyConnected]);
 
   const setRemoteHomeScore = (val: number) =>
-    set([SCOREBOARD, HOME, SCORE], val);
-  const setRemoteHomeSet = (val: number) => set([SCOREBOARD, HOME, SET], val);
-  const setRemoteHomeTeam = (val: string) => set([SCOREBOARD, HOME, TEAM], val);
+    set(`${SCOREBOARD}/${HOME}/${SCORE}`, val);
+  const setRemoteHomeSet = (val: number) =>
+    set(`${SCOREBOARD}/${HOME}/${SET}`, val);
+  const setRemoteHomeTeam = (val: string) =>
+    set(`${SCOREBOARD}/${HOME}/${TEAM}`, val);
   const setRemoteGuestScore = (val: number) =>
-    set([SCOREBOARD, GUEST, SCORE], val);
-  const setRemoteGuestSet = (val: number) => set([SCOREBOARD, GUEST, SET], val);
+    set(`${SCOREBOARD}/${GUEST}/${SCORE}`, val);
+  const setRemoteGuestSet = (val: number) =>
+    set(`${SCOREBOARD}/${GUEST}/${SET}`, val);
   const setRemoteGuestTeam = (val: string) =>
-    set([SCOREBOARD, GUEST, TEAM], val);
-  const setRemoteSwitched = (val: boolean) => set([SCOREBOARD, SWITCHED], val);
-  const setRemoteTheme = (val: ThemeType) => set([SCOREBOARD, THEME], val);
+    set(`${SCOREBOARD}/${GUEST}/${TEAM}`, val);
+  const setRemoteSwitched = (val: boolean) =>
+    set(`${SCOREBOARD}/${SWITCHED}`, val);
+  const setRemoteTheme = (val: ThemeType) => set(`${SCOREBOARD}/${THEME}`, val);
 
   if (needsSync) {
     setNeedsSync(false);
@@ -242,6 +262,7 @@ export default function State(props: {
     themeType: [theme, setTheme],
     connected,
     master: [isMaster, setIsMaster],
+    flipped: [isFlipped, setFlipped],
   };
 
   const store = JSON.stringify([
@@ -254,6 +275,7 @@ export default function State(props: {
     state.switched[0],
     state.themeType[0],
     state.master[0],
+    state.flipped[0],
   ]);
 
   window.localStorage?.setItem(storeKey, store);
@@ -309,4 +331,9 @@ export function useThemeType() {
 export function useMaster() {
   const state = React.useContext(StateCtx);
   return state.master;
+}
+
+export function useFlipped() {
+  const state = React.useContext(StateCtx);
+  return state.flipped;
 }

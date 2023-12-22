@@ -1,6 +1,6 @@
 import { Box, Typography, useTheme } from "@mui/material";
 import React, { CSSProperties } from "react";
-import { useGuestSet, useHomeSet, useSwitched } from "./State";
+import { useFlipped, useGuestSet, useHomeSet, useSwitched } from "./State";
 import useSwipe from "./touchHandlers";
 
 export default function SetPanel(props: {
@@ -13,7 +13,8 @@ export default function SetPanel(props: {
   const guestScore = useGuestSet();
 
   const [guestInverted] = useSwitched();
-  const guest = props.guest !== guestInverted;
+  const [guestFlipped] = useFlipped();
+  const guest = (props.guest !== guestInverted) !== guestFlipped;
 
   const [set, setSet] = guest ? guestScore : homeScore;
 

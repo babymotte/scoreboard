@@ -1,6 +1,6 @@
 import { Typography, useTheme } from "@mui/material";
 import React from "react";
-import { useGuestScore, useHomeScore, useSwitched } from "./State";
+import { useFlipped, useGuestScore, useHomeScore, useSwitched } from "./State";
 import useSwipe from "./touchHandlers";
 
 export default function ScorePanel(props: { guest: boolean }) {
@@ -8,7 +8,8 @@ export default function ScorePanel(props: { guest: boolean }) {
   const guestScore = useGuestScore();
 
   const [guestInverted] = useSwitched();
-  const guest = props.guest !== guestInverted;
+  const [guestFlipped] = useFlipped();
+  const guest = (props.guest !== guestInverted) !== guestFlipped;
 
   const [score, setScore] = guest ? guestScore : homeScore;
 
