@@ -5,6 +5,7 @@ RUN npm i
 COPY scoreboard-frontend .
 RUN npm run build
 
-FROM nginx
-WORKDIR /usr/share/nginx/html
-COPY --from=scoreborad-frontend-builder /src/build .
+FROM babymotte/worterbuch-arm:0.41.4
+WORKDIR /app
+COPY --from=scoreborad-frontend-builder /src/build/ /html
+ENV WORTERBUCH_WEBROOT_PATH=/html
