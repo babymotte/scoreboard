@@ -37,8 +37,8 @@ function setupAutostart() {
         xset s noblank
         matchbox-window-manager -use_titlebar no &
         unclutter &
-        sudo -u "$(cat /tmp/sb-user)" chromium --kiosk --incognito --window-position=0,0 http://scoreboard.local' >"$HOME/.config/scoreboard/kiosk.sh"
-    echo 'export DISPLAY=:0 && id -un > /tmp/sb-user && sudo xinit "$HOME/.config/scoreboard/kiosk.sh" -- vt$(sudo fgconsole)' >"$HOME/.config/scoreboard/xinit.sh"
+        sudo -u "$(cat /tmp/sb-user)" chromium --kiosk --window-position=0,0 http://scoreboard.local' >"$HOME/.config/scoreboard/kiosk.sh"
+    echo 'export DISPLAY=:0 && id -un > /tmp/sb-user && [[ -n "$SSH_CLIENT" ]] || [[ -n "$SSH_TTY" ]] || sudo xinit "$HOME/.config/scoreboard/kiosk.sh" -- vt$(sudo fgconsole)' >"$HOME/.config/scoreboard/xinit.sh"
     chmod a+x "$HOME/.config/scoreboard/kiosk.sh"
     chmod a+x "$HOME/.config/scoreboard/xinit.sh"
     echo '"$HOME/.config/scoreboard/xinit.sh"' >>"$HOME/.bashrc"
