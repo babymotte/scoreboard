@@ -26,21 +26,21 @@ function installDocker() {
 function installScoreboard() {
     [[ -d "$HOME/.config/scoreboard" ]] || mkdir "$HOME/.config/scoreboard"
     echo 'window.globalConfig = { backendScheme: "ws", backendHost: "score.board", backendPort: 80, backendPath: "/ws" };' >"$HOME/.config/scoreboard/config.js"
-    sudo docker run --name scoreboard -d --restart always -p 80:80 -v "$HOME/.config/scoreboard/config.js":"/html/__config__.js" babymotte/scoreboard:1.0.0
+    sudo docker run --name scoreboard -d --restart always -p 80:80 -v "$HOME/.config/scoreboard/config.js":"/html/__config__.js" babymotte/scoreboard:1.1.0
 }
 
 function installNodeRed() {
     DIR=$(pwd)
-    curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered >node-setup.sh &&
-        bash node-setup.sh --confirm-install --confirm-pi --restart --update-nodes &&
-        rm node-setup.sh &&
-        cd $HOME/.node-red &&
-        npm install @babymotte/node-red-worterbuch &&
-        npm install node-red-dashboard &&
-        npm install node-red-node-pi-gpio &&
-        mkdir projects && cd projects && git clone https://github.com/babymotte/scoreboard-flow.git &&
-        sudo systemctl enable nodered &&
-        cd "$DIR"
+    curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered >node-setup.sh
+    bash node-setup.sh --confirm-install --confirm-pi --restart --update-nodes
+    rm node-setup.sh
+    cd $HOME/.node-red
+    npm install @babymotte/node-red-worterbuch
+    npm install node-red-dashboard
+    npm install node-red-node-pi-gpio
+    mkdir projects && cd projects && git clone https://github.com/babymotte/scoreboard-flow.git
+    sudo systemctl enable nodered
+    cd "$DIR"
 }
 
 function setupAutostart() {
@@ -109,6 +109,10 @@ function disableDesktop() {
     sudo systemctl disable lightdm
 }
 
+function cleanUp() {
+    sudo apt-get autoremove -y
+}
+
 echo "Installing docker …"
 installDocker
 
@@ -121,8 +125,11 @@ installNodeRed
 echo "Setting up autostart …"
 setupAutostart
 
+echo "Disabling desktop …"
+disableDesktop
+
 echo "Setting up Wifi hotspot …"
 setupHotSpot
 
-echo "Disabling desktop …"
-disableDesktop
+echo "Cleaning up …"
+cleanUp
