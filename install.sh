@@ -7,9 +7,6 @@ read DUMMY
 
 scp setup.sh scoreboard:.
 
-# TODO copy and install node-red flow
-# scp flow.json scoreboard:.
-
 ssh scoreboard ./setup.sh || {
     echo "Setup failed."
     exit 1
