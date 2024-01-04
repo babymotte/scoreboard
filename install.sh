@@ -7,12 +7,12 @@ read DUMMY
 
 scp setup.sh scoreboard:.
 
-ssh scoreboard ./setup.sh || {
+ssh -tt scoreboard ./setup.sh || {
     echo "Setup failed."
     exit 1
 }
 
-echo "Done. The Raspberry Pi will now be rebooted. After reboot, log into Wifi 'ScoreBoard' (password is '!Score!Board!') and navigate to 'http://score.board'."
+echo "Done. The Raspberry Pi will now be rebooted. After reboot, log into Wifi 'ScoreBoard' (password is '!Score!Board!') and navigate to 'http://scoreboard'."
 echo "Press enter to continue …"
 read DUMMY
 ssh scoreboard sudo reboot
