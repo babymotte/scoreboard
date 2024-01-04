@@ -29,6 +29,20 @@ function installScoreboard() {
     sudo docker run --name scoreboard -d --restart always -p 80:80 -v "$HOME/.config/scoreboard/config.js":"/html/__config__.js" babymotte/scoreboard:1.0.0
 }
 
+function installNodeRed() {
+    DIR=$(pwd)
+    curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered >node-setup.sh &&
+        bash node-setup.sh --confirm-install --confirm-pi --restart --update-nodes &&
+        rm node-setup.sh &&
+        cd $HOME/.node-red &&
+        npm install @babymotte/node-red-worterbuch &&
+        npm install node-red-dashboard &&
+        npm install node-red-node-pi-gpio &&
+        mkdir projects && cd projects && git clone https://github.com/babymotte/scoreboard-flow.git &&
+        sudo systemctl enable nodered &&
+        cd "$DIR"
+}
+
 function setupAutostart() {
     sudo apt-get install -y chromium xterm fonts-noto-color-emoji matchbox-window-manager xautomation unclutter --fix-missing
     echo '#!/bin/sh
@@ -91,14 +105,24 @@ ff02::2         ip6-allrouters
 192.168.0.10       score.board' | sudo tee /etc/hosts
 }
 
+function disableDesktop() {
+    sudo systemctl disable lightdm
+}
+
 echo "Installing docker …"
 installDocker
 
 echo "Installing scoreboard …"
 installScoreboard
 
+echo "Installing node-red …"
+installNodeRed
+
 echo "Setting up autostart …"
 setupAutostart
 
 echo "Setting up Wifi hotspot …"
 setupHotSpot
+
+echo "Disabling desktop …"
+disableDesktop

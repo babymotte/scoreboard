@@ -15,11 +15,6 @@ ssh scoreboard ./setup.sh || {
     exit 1
 }
 
-echo "Setup complete. For correct autostart behavior, raspi-config will be run next. Under 'System Options' set 'Boot / Auto Login' mode to 'Console Autologin' and save!"
-echo "Press enter to continue …"
-read DUMMY
-ssh scoreboard sudo raspi-config
-
 echo "Done. The Raspberry Pi will now be rebooted. After reboot, log into Wifi 'ScoreBoard' (password is '!Score!Board!') and navigate to 'http://score.board'."
 echo "Press enter to continue …"
 read DUMMY
